@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / 'dbenv.env')
@@ -77,16 +77,37 @@ WSGI_APPLICATION = 'my_restapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'restapi',
-        'USER': os.getenv('restapi_LOGIN'),
-        'PASSWORD': os.getenv('restapi_PASS'),
-        'HOST': os.getenv('restapi_HOSTHOST'),
-        'PORT': os.getenv('restapi_PORT', '5432'),
+if 'RENDER' in os.environ:
+    DEBUG = False
+    ALLOWED_HOSTS = ['api-fstr.onrender.com']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'restapi',
+            'USER': os.getenv('restapi_LOGIN'),
+            'PASSWORD': os.getenv('restapi_PASS'),
+            'HOST': os.getenv('restapi_HOSTHOST'),
+            'PORT': os.getenv('restapi_PORT', '5432'),
+        }
     }
-}
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ['*']
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'restapi',
+#         'USER': os.getenv('restapi_LOGIN'),
+#         'PASSWORD': os.getenv('restapi_PASS'),
+#         'HOST': os.getenv('restapi_HOSTHOST'),
+#         'PORT': os.getenv('restapi_PORT', '5432'),
+#     }
+# }
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
